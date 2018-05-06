@@ -4,6 +4,17 @@ import requests
 from lxml import html
 import pync
 
+'''
+Author: @blackram
+Needed pync pre installed for this to work try: 'brew install terminal-notifier' and then 'pip install pync'
+pync uses termial-notifier which has to be pre installed as well, 
+Add Cronjob:
+    */1 * * * * cd /path/to/file/ && ./this_file.py
+added cronjob as above for alerting every minute on the cricket score
+modify shebang line '#!/usr/local/bin/python' on top based on installation directory using which python on your mac     
+'''
+
+#constants
 CRICKET_SITE = 'http://www.cricbuzz.com'
 CONTENT_FROM_HTML = '//div[@class="cb-ovr-flo cb-hmscg-tm-nm"  or @class="cb-ovr-flo" or  @class=" cb-ovr-flo cb-text-complete" or @class=" cb-ovr-flo cb-text-live"]/text()'
 TITLE = 'Cricket Scores'
