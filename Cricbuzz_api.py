@@ -1,6 +1,18 @@
 import xml.etree.ElementTree as ET
 import urllib2
 
+'''
+Author: @blackram
+
+a simple python script which uses CRIC BUZZ LIVE CRICKET FEED
+for getting live cricket feed in xml file using urllib2
+and formatting xml file to readable format. 
+
+***requirements***
+needed to install urllib2 before running this script
+try pip install urllib2 for installing
+'''
+
 # Constants Start
 MATCH_STATUS_LIVE = "inprogress"
 MATCH_STATUS_UPCOMING = "preview"
@@ -19,6 +31,15 @@ tree = ET.parse(xml)
 root = tree.getroot()
 # Work on cricbuzz API response End
 
+# properties for updating to map
+live_feed = ""
+upcoming_feed = ""
+completed_feed = ""
+# properties for updating to map
+
+# dictionary is useful when integrated with bots/messages/mails
+dict = {'live_matches': live_feed, 'upcoming_matches': upcoming_feed, 'completed_matches': completed_feed}
+
 # Iterating through all matches available
 for match in root.findall('match'):
     series = match.find('srs')
@@ -34,14 +55,12 @@ for match in root.findall('match'):
 
     if(match_status == MATCH_STATUS_UPCOMING):
         upcoming_matches = UPCOMING_MATCH_DETAILS_HEADER
-        # add match details and send result
-        # print "match is in progress"
         upcoming_matches = upcoming_matches + match_details["srs"] + "\n"
         upcoming_matches = upcoming_matches + match_details["mchDesc"] + " in " + match_details["grnd"]+"\n"
         upcoming_matches = upcoming_matches + "will be playing "+match_details["mnum"] + "\n"
         upcoming_matches = upcoming_matches + status_details["status"] + "\n"
-        # notification = notification + "\n" + "----MATCH INFO COMPLETED----"
-        print upcoming_matches
+        upcoming_feed = upcoming_feed + upcoming_matches
+        dict['upcoming_matches'] = upcoming_feed
 
     elif(match_status == MATCH_STATUS_LIVE):
         live_matches = LIVE_MATCH_DETAILS_HEADER
@@ -50,7 +69,8 @@ for match in root.findall('match'):
         inngs = bt_tm.find("Inngs")
         live_matches = live_matches + bt_tm["sName"] + ": " + inngs["r"] + "for " + inngs["wkts"] + " in "+ inngs["ovrs"] + "\n"
         live_matches = live_matches + "playing in "+match_details["mnum"] + "\n"
-        print live_matches
+        live_feed = live_feed + live_matches
+        dict['live_feed'] = live_feed
 
     elif(match_status in COMPLETED_MATCH_STATES):
         completed_matches = COMPLETED_MATCH_DETAILS_HEADER
@@ -58,7 +78,14 @@ for match in root.findall('match'):
         completed_matches = completed_matches + match_details["mchDesc"] + "\n"
         completed_matches = completed_matches + status_details["status"] + "\n"
         completed_matches = completed_matches + "has played in " + match_details["mnum"] + "\n"
-        print completed_matches
+        completed_feed = completed_feed + completed_matches
+        dict['completed_matches'] = completed_feed
+
+# printing to console for testing
+print dict['live_matches']
+print dict['upcoming_matches']
+print dict['completed_matches']
+
 
 
 
