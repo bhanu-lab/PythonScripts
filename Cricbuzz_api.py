@@ -5,8 +5,10 @@ import urllib2
 MATCH_STATUS_LIVE = "inprogress"
 MATCH_STATUS_UPCOMING = "preview"
 MATCH_STATUS_COMPLETED = "Result"
-COMPLETED_MATCH_STATES = {'stump', 'complete', 'Result'}
+COMPLETED_MATCH_STATES = ["stump", "complete", "Result"]
 UPCOMING_MATCH_DETAILS_HEADER = "***UPCOMING MATCH DETAILS***"+"\n"
+LIVE_MATCH_DETAILS_HEADER = "***LIVE CRICKET SCORES***"+"\n"
+COMPLETED_MATCH_DETAILS_HEADER = "***COMPLETED MATCHES***"+"\n"
 CRIC_BUZZ_URL = "http://synd.cricbuzz.com/j2me/1.0/livematches.xml"
 # Costants End
 
@@ -28,21 +30,36 @@ for match in root.findall('match'):
     # print state.attrib
     # print match_details["srs"]
     match_status = status_details["mchState"]
-    upcoming_matches = UPCOMING_MATCH_DETAILS_HEADER
-    live_matches = ""
+    # print match_status
+
     if(match_status == MATCH_STATUS_UPCOMING):
+        upcoming_matches = UPCOMING_MATCH_DETAILS_HEADER
         # add match details and send result
         # print "match is in progress"
         upcoming_matches = upcoming_matches + match_details["srs"] + "\n"
         upcoming_matches = upcoming_matches + match_details["mchDesc"] + " in " + match_details["grnd"]+"\n"
-        upcoming_matches = upcoming_matches + status_details["status"]
+        upcoming_matches = upcoming_matches + "will be playing "+match_details["mnum"] + "\n"
+        upcoming_matches = upcoming_matches + status_details["status"] + "\n"
         # notification = notification + "\n" + "----MATCH INFO COMPLETED----"
         print upcoming_matches
+
     elif(match_status == MATCH_STATUS_LIVE):
+        live_matches = LIVE_MATCH_DETAILS_HEADER
         match_score = match.find("mscr")
         bt_tm = match_score.find("btTm")
         inngs = bt_tm.find("Inngs")
-        live_matches = upcoming_matches + bt_tm["sName"]
+        live_matches = live_matches + bt_tm["sName"] + ": " + inngs["r"] + "for " + inngs["wkts"] + " in "+ inngs["ovrs"] + "\n"
+        live_matches = live_matches + "playing in "+match_details["mnum"] + "\n"
+        print live_matches
+
+    elif(match_status in COMPLETED_MATCH_STATES):
+        completed_matches = COMPLETED_MATCH_DETAILS_HEADER
+        completed_matches = completed_matches + match_details["srs"] + "\n"
+        completed_matches = completed_matches + match_details["mchDesc"] + "\n"
+        completed_matches = completed_matches + status_details["status"] + "\n"
+        completed_matches = completed_matches + "has played in " + match_details["mnum"] + "\n"
+        print completed_matches
+
 
 
 
