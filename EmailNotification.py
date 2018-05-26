@@ -8,6 +8,7 @@ A simple python script to send email notifications for multiple receipeints base
 SMPT lib available in python. 
 '''
 
+
 # function for reading names and emails from text file
 def get_contacts(file_name):
     names = []
