@@ -32,7 +32,7 @@ def get_my_account_info(file_name):
 # main function
 def main():
 
-      MY_ADDRESS, MY_PASSWORD = get_my_account_info('resources/from_mail.txt') # get my account details
+      MY_ADDRESS, MY_PASSWORD = get_my_account_info('resources/from_mail') # get my account details
       names, emails = get_contacts('resources/my_contacts.txt')  # read contacts
       message_template = get_message_template('resources/email_template.txt') # read template
 
@@ -54,7 +54,7 @@ def main():
             msg.attach(MIMEText(message, 'plain'))
 
             # send the mail
-            server.sendmail(msg.as_string())
+            server.sendmail(MY_ADDRESS, email, msg.as_string())
             del msg
 
       server.quit()
