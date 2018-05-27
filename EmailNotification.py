@@ -4,8 +4,12 @@ from email.mime.text import MIMEText
 from string import Template
 
 '''
+Author: @blackram
 A simple python script to send email notifications for multiple receipeints based on the
 SMPT lib available in python. 
+
+***requirements***
+need to install email package for this script
 '''
 
 
