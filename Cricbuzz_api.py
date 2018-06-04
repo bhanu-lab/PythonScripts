@@ -32,13 +32,13 @@ root = tree.getroot()
 # Work on cricbuzz API response End
 
 # properties for updating to map
-live_feed = ""
-upcoming_feed = ""
-completed_feed = ""
+live_feed_global = ""
+upcoming_feed_global = ""
+completed_feed_global = ""
 # properties for updating to map
 
 # dictionary is useful when integrated with bots/messages/mails
-dict = {'live_matches': live_feed, 'upcoming_matches': upcoming_feed, 'completed_matches': completed_feed}
+dict = {'live_matches': live_feed_global, 'upcoming_matches': upcoming_feed_global, 'completed_matches': completed_feed_global}
 
 
 def main():
@@ -61,6 +61,7 @@ def main():
             upcoming_matches = upcoming_matches + match_details["mchDesc"] + " in " + match_details["grnd"]+"\n"
             upcoming_matches = upcoming_matches + "will be playing "+match_details["mnum"] + "\n"
             upcoming_matches = upcoming_matches + status_details["status"] + "\n"
+            upcoming_feed = dict['upcoming_matches']
             upcoming_feed = upcoming_feed + upcoming_matches
             dict['upcoming_matches'] = upcoming_feed
 
@@ -71,6 +72,7 @@ def main():
             inngs = bt_tm.find("Inngs")
             live_matches = live_matches + bt_tm["sName"] + ": " + inngs["r"] + "for " + inngs["wkts"] + " in "+ inngs["ovrs"] + "\n"
             live_matches = live_matches + "playing in "+match_details["mnum"] + "\n"
+            live_feed = dict['live_feed']
             live_feed = live_feed + live_matches
             dict['live_feed'] = live_feed
 
@@ -80,6 +82,7 @@ def main():
             completed_matches = completed_matches + match_details["mchDesc"] + "\n"
             completed_matches = completed_matches + status_details["status"] + "\n"
             completed_matches = completed_matches + "has played in " + match_details["mnum"] + "\n"
+            completed_feed = dict['completed_matches']
             completed_feed = completed_feed + completed_matches
             dict['completed_matches'] = completed_feed
 
