@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 import urllib2
+import sys
 
 '''
 Author: @blackram
@@ -27,7 +28,12 @@ CRIC_BUZZ_URL = "http://synd.cricbuzz.com/j2me/1.0/livematches.xml"
 # Work on cricbuzz API response Start
 url = urllib2.Request(CRIC_BUZZ_URL, headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/602.4.8 (KHTML, like Gecko) Version/10.0.3 Safari/602.4.8"})
 xml = urllib2.urlopen(url)
-tree = ET.parse(xml)
+try:
+    tree = ET.parse(xml)
+except ET.ParseError:
+    print "Something wrong with API"
+    sys.exit(2)
+
 root = tree.getroot()
 # Work on cricbuzz API response End
 
