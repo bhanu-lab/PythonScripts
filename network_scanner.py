@@ -1,5 +1,6 @@
 import socket
 import netifaces
+import subprocess
 '''
 Determine your own IP address
 Determine your own netmask
@@ -18,9 +19,12 @@ s.close()
 
 #determine netmask
 gateway = netifaces.gateways()
+
+#gateway for the network in which device is present
 default_gateway = gateway['default'][netifaces.AF_INET][0]
 print("default gateways is: "+str(default_gateway ))
 
+#obtaining all the network interfaces
 interfaces = netifaces.interfaces()
 
 for interface in interfaces:
@@ -30,3 +34,16 @@ for interface in interfaces:
 		print(addrs[netifaces.AF_INET])
 	except KeyError:
 		print("No address assigned for interface : "+interface)
+		
+addrs = default_gateway.split('.')
+#print("last device number of subnetwork : {}" + str(int(addrs[3])+1))
+host_prefix = addrs[0]+"."+addrs[1]+"."+addrs[2]+"."
+for host in range(int(addrs[3]), 255):
+	ip_addr = host_prefix+str(host)
+	ping = subprocess.Popen(['ping', '-c', '1', '-w', '1', ip_addr],stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+	stdout, stderr = ping.communicate()
+	if ping.returncode == 0:
+		print(ip_addr + " is available ")
+	else:
+		print(ip_addr + " is not available")
+	'''print(error)'''
