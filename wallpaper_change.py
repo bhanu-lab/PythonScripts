@@ -1,14 +1,18 @@
 import os
 import random
 import logging
+import blackram_utils
 
 # TODO: check previously set wallpaper is not selected again to set
 # TODO: check for allowed file extensions like jpg, jpeg, png
+# TODO: pick up folder location from a file instead of hardcoding
 
 logger = logging.getLogger()
+# logger.setLevel(logging.INFO)
 
 # read all wallpapers stored location
-wallpapers_location = "/home/bhanureddy/Pictures/Wallpapers"
+wallpapers_location = blackram_utils.get_param_value("blackscripts.settings.wallpaper")
+logger.info("wallpapers location is "+wallpapers_location)
 wallpapers_list = []
 
 # getting list of all files in the folder
@@ -17,8 +21,9 @@ logger.info(list)
 
 # iterate through the list of wallpapers list
 for file in list:
-    if os.path.isfile(wallpapers_location+"/"+file): ''' for checking whether it is a file
-    os.path.isfile needs complete file path instead of file name alone '''
+    # for checking whether it is a file
+    # os.path.isfile needs complete file path instead of file name alone
+    if os.path.isfile(wallpapers_location+"/"+file):
         logger.info(wallpapers_location+file)
         wallpapers_list.append(file)
 
