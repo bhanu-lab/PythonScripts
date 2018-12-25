@@ -1,6 +1,7 @@
 import os
 import random
 import logging
+import platform
 import blackram_utils
 
 # TODO: check previously set wallpaper is not selected again to set
@@ -19,6 +20,12 @@ wallpapers_list = []
 list = os.listdir(wallpapers_location)
 logger.info(list)
 
+#Checking the OS
+if platform.system()=='Windows':
+    print("Not updated for Windows")
+elif platform.system()=='Darwin':
+    print("Not updated for Mac")
+    
 # iterate through the list of wallpapers list
 for file in list:
     # for checking whether it is a file
