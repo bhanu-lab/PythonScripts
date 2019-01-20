@@ -21,10 +21,7 @@ list = os.listdir(wallpapers_location)
 logger.info(list)
 
 #Checking the OS
-if platform.system()=='Windows':
-    print("Not updated for Windows")
-elif platform.system()=='Darwin':
-    print("Not updated for Mac")
+print checkOS()
     
 # iterate through the list of wallpapers list
 for file in list:
