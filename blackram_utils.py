@@ -15,9 +15,9 @@ def get_param_value(value):
 
 #Checking the OS
 def checkOS():
-    if platform.system()=='Windows':
-        return "Not updated for Windows"
-    elif platform.system()=='Darwin':
+    #if platform.system()=='Windows':
+        #return "Not updated for Windows"
+    if platform.system()=='Darwin':
         return "Not updated for Mac"
     #elif platform.system()=='Linux':
         #return "Works for linux"
