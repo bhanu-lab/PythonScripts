@@ -1,0 +1,1 @@
+blackscripts.settings.wallpaper = /home/bhanureddy/Pictures/Wallpapers
