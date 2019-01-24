@@ -10,8 +10,6 @@ import blackram_utils
 import sqlite3
 
 # TODO: check previously set wallpaper is not selected again to set
-# TODO: check for allowed file extensions like jpg, jpeg, png
-# TODO: pick up folder location from a file instead of hardcoding
 
 logging.basicConfig()
 logger = logging.getLogger()
@@ -53,3 +51,10 @@ if platform.system()=='linux':
 os.system("/usr/bin/gsettings set org.gnome.desktop.background picture-uri "+wallpapers_location+"/"+wallpapers_list[wallpaper_num])
 
 logger.info("Command Executed is : /usr/bin/gsettings set org.gnome.desktop.background picture-uri "+wallpapers_location+"/"+wallpapers_list[wallpaper_num])
+#for windows to set wallpaper
+if platform.system()=='Windows':
+    TOTAL=wallpapers_location+"/"+wallpapers_list[wallpaper_num]                   
+    PATH =bytes(TOTAL,'utf-8')
+    SPI_SETDESKWALLPAPER = 20
+    ctypes.windll.user32.SystemParametersInfoA(SPI_SETDESKWALLPAPER, 0, PATH, 3)
+
