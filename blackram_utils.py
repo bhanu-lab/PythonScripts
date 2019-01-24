@@ -1,5 +1,4 @@
-
-
+import os
 param_dict = {}
 
 def get_param_config():
@@ -13,3 +12,12 @@ def get_param_config():
 def get_param_value(value):
     get_param_config()
     return param_dict[value]
+
+#Checking the OS
+def checkOS():
+    if platform.system()=='Windows':
+        return "Not updated for Windows"
+    elif platform.system()=='Darwin':
+        return "Not updated for Mac"
+    #elif platform.system()=='Linux':
+        #return "Works for linux"

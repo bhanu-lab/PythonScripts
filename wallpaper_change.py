@@ -3,6 +3,7 @@
 import os
 import random
 import logging
+import platform
 import blackram_utils
 import sqlite3
 
@@ -22,6 +23,9 @@ wallpapers_list = []
 list = os.listdir(wallpapers_location)
 logger.info(list)
 
+#Checking the OS
+print checkOS()
+    
 # iterate through the list of wallpapers list
 for file in list:
     # for checking whether it is a file
