@@ -2,6 +2,14 @@
 import requests 
 import html5lib
 from bs4 import BeautifulSoup 
+
+'''
+Author: R@jesh
+A simple python script to download a News Paper and to send as email attachment to users dialy. 
+***requirements***
+need to install required packages for this script
+'''
+
 #URL which contain GDrive linkof Hindhu Paper
 URL = "https://www.bitul.in/epaper/the-hindu/"
 r = requests.get(URL) 
@@ -35,3 +43,5 @@ with open("NewsPaper.pdf","wb") as pdf:
 		if chunk: 
 			pdf.write(chunk) 
 '''
+
+#Now Downloaded File can be sent as email attachment - Already Done
