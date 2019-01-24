@@ -6,6 +6,7 @@ from email.mime.base import MIMEBase
 from email import encoders
 import datetime
 import os.path as op
+import os
 import sys
 
 
@@ -47,11 +48,6 @@ def get_my_account_info(file_name):
     return my_address, my_password
 
 
-'''# function to get attachment to the mail
-def get_attachment(file_name):
-    return open(file_name, mode='r').read()'''
-
-
 # main function
 def main():
 
@@ -69,8 +65,6 @@ def main():
     server.login(my_address, my_password)
     failed_rcpts = {}
     for name, email in zip(names, emails):
-		#print(name)
-		#print(email)
         msg = MIMEMultipart()
         message = message_template.substitute(PERSON_NAME=name.title())
         print message
@@ -85,25 +79,22 @@ def main():
         # adding attachement to the mail message
         # param_length = sys.argv[0]
         attachment = True
+        
+        #Todo - Take Command Line Argument to send files - may be path to files
 
         # attaching only if file name mentioned in parameter
         if attachment:
-            filename = "SampleMailAttachment.txt"
-            attachment = open("resources/SampleMailAttachment.txt", "rb")
-            filename1 = "2.jpg"
-            attachment1 = open("resources/2.jpg", "rb")
-            part = MIMEBase('application', 'octet-stream')
-            part.set_payload((attachment).read())
-            encoders.encode_base64(part)
-            part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
-            msg.attach(part)
-            #2nd Attachment - May be we can use loop for multiplefiles - ToDo
-            part = MIMEBase('application', 'octet-stream')
-            part.set_payload((attachment1).read())
-            encoders.encode_base64(part)
-            part.add_header('Content-Disposition', "attachment; filename= %s" % filename1)
-            msg.attach(part)
-
+			path = 'resources/EMailAttachments/'
+			files = os.listdir(path)
+			#Attaching all the files in the directory
+			for name in files:
+				print(name)
+				filePath = path + name
+				attachment = open(filePath, "rb")
+				part = MIMEBase('application', 'octet-stream')
+				part.set_payload((attachment).read())
+				part.add_header('Content-Disposition', "attachment; filename= %s" % name)
+				msg.attach(part)
         # send the mail
         failed_rcpts = server.sendmail(my_address, email, msg.as_string())
         del msg
