@@ -12,6 +12,8 @@ Scan all the addresses (except the lowest, which is your network address and the
 Use your DNSs reverse lookup to determine the hostname for IP addresses which respond to your scan.
 '''
 
+available_ips = []
+
 
 def check_ip_is_assigned(start, end):
     for host in range(int(start), int(end)):
@@ -19,10 +21,8 @@ def check_ip_is_assigned(start, end):
         ping = subprocess.Popen(['ping', '-c', '1', '-w', '1', ip_addr], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = ping.communicate()
         if ping.returncode == 0:
-            print(ip_addr + " is available ")
-        else:
-            print(ip_addr + " is not available")
-        '''print(error)'''
+            # print(ip_addr + " is available ")
+            available_ips.append(ip_addr)
 
 
 # noting start time
@@ -59,24 +59,27 @@ addrs = default_gateway.split('.')
 # print("last device number of subnetwork : {}" + str(int(addrs[3])+1))
 host_prefix = addrs[0] + "." + addrs[1] + "." + addrs[2] + "."
 
-t1 = threading.Thread(target=check_ip_is_assigned, args=(0, 51,))
-t2 = threading.Thread(target=check_ip_is_assigned, args=(50, 101,))
-t3 = threading.Thread(target=check_ip_is_assigned, args=(101, 151,))
-t4 = threading.Thread(target=check_ip_is_assigned, args=(151, 201,))
-t5 = threading.Thread(target=check_ip_is_assigned, args=(201, 256,))
+start = 0
+end = 51
+threads = []
 
-t1.start()
-t2.start()
-t3.start()
-t4.start()
-t5.start()
+print("Please wait while we are scanning network ...")
 
-t1.join()
-t2.join()
-t3.join()
-t4.join()
-t5.join()
+for i in range (0,5):
 
+    # making sure ip address scanning wont exceed 255
+    if end < 256:
+        t = threading.Thread(target=check_ip_is_assigned, args=(start, end,))
+        start = start + 51
+        end = end + 52
+        t.start()
+        threads.append(t)
+
+# joining all the threads
+for t in threads:
+    t.join()
+
+print(str(available_ips))
 duration = time.time() - start_time
 
 # calculating total time taken for the execution
