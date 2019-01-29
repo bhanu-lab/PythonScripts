@@ -8,20 +8,27 @@ import datetime
 import os.path as op
 import os
 import sys
+import logging
 
 
 '''
 Author: @blackram
 Contributer: R@jesh
 A simple python script to send email notifications for multiple receipeints based on the
-SMPT lib available in python. 
+SMPT lib available in python.
 
 ***requirements***
 need to install email package for this script
 '''
 
+# Setting up logger
+
+logging.basicConfig()
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 # function for reading names and emails from text file
+
 def get_contacts(file_name):
     names = []
     emails = []
@@ -67,7 +74,7 @@ def main():
     for name, email in zip(names, emails):
         msg = MIMEMultipart()
         message = message_template.substitute(PERSON_NAME=name.title())
-        print message
+        logger.info("Message being sent is : "+message)
 
         msg['From'] = my_address
         msg['To'] = email
@@ -79,7 +86,7 @@ def main():
         # adding attachement to the mail message
         # param_length = sys.argv[0]
         attachment = True
-        
+
         #Todo - Take Command Line Argument to send files - may be path to files
 
         # attaching only if file name mentioned in parameter
@@ -99,7 +106,7 @@ def main():
         failed_rcpts = server.sendmail(my_address, email, msg.as_string())
         del msg
         # failed receipt will be printed here
-        print failed_rcpts
+        logger.info("failed receipeints are "+ failed_rcpts)
 
     server.quit()  # stopping SMTP server
 
