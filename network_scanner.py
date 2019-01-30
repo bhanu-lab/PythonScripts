@@ -16,14 +16,16 @@ available_ips = []
 
 
 def check_ip_is_assigned(start, end):
+
     for host in range(int(start), int(end)):
         ip_addr = host_prefix + str(host)
-        ping = subprocess.Popen(['ping', '-c', '1', '-w', '1', ip_addr], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # Ping -c for count of total number of packets to be sent
+        #       -w for total number of milliseconds to be waiting
+        ping = subprocess.Popen(['ping', '-c', '1', '-w', '1', '-i', '0.2', ip_addr], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = ping.communicate()
         if ping.returncode == 0:
             # print(ip_addr + " is available ")
             available_ips.append(ip_addr)
-
 
 # noting start time
 start_time = time.time()
@@ -59,19 +61,21 @@ addrs = default_gateway.split('.')
 # print("last device number of subnetwork : {}" + str(int(addrs[3])+1))
 host_prefix = addrs[0] + "." + addrs[1] + "." + addrs[2] + "."
 
-start = 0
-end = 51
+start_addr = 1
+end_addr = 51
 threads = []
 
-print("Please wait while we are scanning network ...")
+print("\nPlease wait while I am scanning network ...\n")
 
 for i in range (0,5):
 
     # making sure ip address scanning wont exceed 255
-    if end < 256:
-        t = threading.Thread(target=check_ip_is_assigned, args=(start, end,))
-        start = start + 51
-        end = end + 52
+    if end_addr < 255:
+
+		# creating multiple threads to complete the scan quickly
+        t = threading.Thread(target=check_ip_is_assigned, args=(start_addr, end_addr,))
+        start_addr = start_addr + 51
+        end_addr = end_addr + 52
         t.start()
         threads.append(t)
 
@@ -79,7 +83,12 @@ for i in range (0,5):
 for t in threads:
     t.join()
 
-print(str(available_ips))
+# showing available IP's
+print("LIVE IP\'S AVAILABLE ARE: ")
+for ip in available_ips:
+	print(ip)
+
+# time taken for completing whole task
 duration = time.time() - start_time
 
 # calculating total time taken for the execution
