@@ -36,7 +36,6 @@ s.connect(("8.8.8.8", 80))
 local_ip = s.getsockname()[0]
 
 print("My local ip address is: " + local_ip + " and host name is: " + socket.gethostname())
-
 s.close()
 
 # determine netmask
@@ -86,7 +85,9 @@ for t in threads:
 # showing available IP's
 print("LIVE IP\'S AVAILABLE ARE: ")
 for ip in available_ips:
-	print(ip)
+
+    # getfqdn will convert ipaddress into hostname
+    print(ip+" - "+socket.getfqdn(ip))
 
 # time taken for completing whole task
 duration = time.time() - start_time
