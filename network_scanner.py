@@ -3,6 +3,7 @@ import netifaces
 import subprocess
 import time
 import threading
+import re
 
 '''
 Determine your own IP address
@@ -13,35 +14,47 @@ Use your DNSs reverse lookup to determine the hostname for IP addresses which re
 '''
 
 available_ips = []
+macs = {}
 
-
-def check_ip_is_assigned(start, end):
-
-    for host in range(int(start), int(end)):
-        ip_addr = host_prefix + str(host)
-        # Ping -c for count of total number of packets to be sent
-        #       -w for total number of milliseconds to be waiting
-        ping = subprocess.Popen(['ping', '-c', '1', '-w', '1', '-i', '0.2', ip_addr], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = ping.communicate()
-        if ping.returncode == 0:
-            # print(ip_addr + " is available ")
-            available_ips.append(ip_addr)
-
-
-def check_ip_is_live(start, end):
+def check_ip_is_assigned(start, end, local_ip):
 
     for host in range(int(start), int(end)):
         ip_addr = host_prefix + str(host)
-        socket_obj = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        socket.setdefaulttimeout(1)
-        try:
-            result = socket_obj.connect_ex((ip_addr, 445))
-            if result == 111:
+        if ip_addr != local_ip:
+            # Ping -c for count of total number of packets to be sent
+            #       -w for total number of milliseconds to be waiting
+            ping = subprocess.Popen(['ping', '-c', '1', '-w', '1', '-i', '0.2', ip_addr], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = ping.communicate()
+            if ping.returncode == 0:
+                # print(ip_addr + " is available ")
                 available_ips.append(ip_addr)
-        except:
-            pass
-        finally:
-            socket_obj.close()
+                pid = subprocess.Popen(["arp", "-n", ip_addr], stdout=subprocess.PIPE)
+                data = pid.communicate()[0]
+
+                # get mac address information from ipaddress using arp -n command on linux
+                mac_addr = re.sub('\s+', ',', data.decode("utf-8").split("\n")[1])
+                macs[mac_addr.split(",")[0]] = mac_addr.split(",")[2]
+                print(re.sub('\s+', ',', data.decode("utf-8").split("\n")[1]))
+
+
+def check_ip_is_live(start, end, local_ip):
+
+    for host in range(int(start), int(end)):
+        ip_addr = host_prefix + str(host)
+        if ip_addr != local_ip:
+            socket_obj = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            socket.setdefaulttimeout(1)
+            try:
+                result = socket_obj.connect_ex((ip_addr, 445))
+                if result == 111:
+                    available_ips.append(ip_addr)
+                    pid = subprocess.Popen(["arp", "-n", ip_addr], stdout=subprocess.PIPE)
+                    data = pid.communicate()[0]
+                    print(data.decode("utf-8"))
+            except:
+                pass
+            finally:
+                socket_obj.close()
 
 
 # noting start time
@@ -78,18 +91,18 @@ addrs = default_gateway.split('.')
 host_prefix = addrs[0] + "." + addrs[1] + "." + addrs[2] + "."
 
 start_addr = 1
-end_addr = 51
+end_addr = 26
 threads = []
 
 print("\nPlease wait while I am scanning network ...\n")
 
-for i in range (0,5):
+for i in range (0,10):
 
     # making sure ip address scanning wont exceed 255
     if end_addr < 255:
 
         # creating multiple threads to complete the scan quickly
-        t = threading.Thread(target=check_ip_is_live, args=(start_addr, end_addr,))
+        t = threading.Thread(target=check_ip_is_assigned, args=(start_addr, end_addr, local_ip,))
         start_addr = start_addr + 51
         end_addr = end_addr + 52
         t.start()
@@ -104,7 +117,7 @@ print("LIVE IP\'S AVAILABLE ARE: ")
 for ip in available_ips:
 
     # getfqdn will convert ipaddress into hostname
-    print(ip+" - "+socket.getfqdn(ip))
+    print(ip+" - "+socket.getfqdn(ip) + " - mac addr : " + macs[ip])
 
 # time taken for completing whole task
 duration = time.time() - start_time
