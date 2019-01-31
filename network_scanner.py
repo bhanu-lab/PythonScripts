@@ -27,6 +27,23 @@ def check_ip_is_assigned(start, end):
             # print(ip_addr + " is available ")
             available_ips.append(ip_addr)
 
+
+def check_ip_is_live(start, end):
+
+    for host in range(int(start), int(end)):
+        ip_addr = host_prefix + str(host)
+        socket_obj = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        socket.setdefaulttimeout(1)
+        try:
+            result = socket_obj.connect_ex((ip_addr, 445))
+            if result == 111:
+                available_ips.append(ip_addr)
+        except:
+            pass
+        finally:
+            socket_obj.close()
+
+
 # noting start time
 start_time = time.time()
 
@@ -71,8 +88,8 @@ for i in range (0,5):
     # making sure ip address scanning wont exceed 255
     if end_addr < 255:
 
-		# creating multiple threads to complete the scan quickly
-        t = threading.Thread(target=check_ip_is_assigned, args=(start_addr, end_addr,))
+        # creating multiple threads to complete the scan quickly
+        t = threading.Thread(target=check_ip_is_live, args=(start_addr, end_addr,))
         start_addr = start_addr + 51
         end_addr = end_addr + 52
         t.start()
