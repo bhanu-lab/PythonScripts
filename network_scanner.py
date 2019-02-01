@@ -4,6 +4,7 @@ import subprocess
 import time
 import threading
 import re
+import requests
 
 '''
 Determine your own IP address
@@ -55,6 +56,12 @@ def check_ip_is_live(start, end, local_ip):
                 pass
             finally:
                 socket_obj.close()
+
+# function to get 
+def get_oui_from_mac_addr(mac_addr):
+    MAC_URL = 'http://macvendors.co/api/%s'
+    r = requests.get(MAC_URL % mac_addr)
+    return r.json()['result']['company']
 
 
 # noting start time
@@ -117,7 +124,7 @@ print("LIVE IP\'S AVAILABLE ARE: ")
 for ip in available_ips:
 
     # getfqdn will convert ipaddress into hostname
-    print(ip+" - "+socket.getfqdn(ip) + " - mac addr : " + macs[ip])
+    print(ip+" - "+socket.getfqdn(ip) + " - mac addr : " + macs[ip] + " - Vendor : "+get_oui_from_mac_addr(macs[ip]))
 
 # time taken for completing whole task
 duration = time.time() - start_time
