@@ -29,7 +29,6 @@ def get_local_machine_mac_addr(local_ip):
     macs[local_ip] = wlp2s0.strip().split(" ")[1]
 
 
-
 # function to add mac address to macs map with key as ip address
 def add_mac_addr(ip_addr):
     if ip_addr != local_ip:
@@ -39,7 +38,7 @@ def add_mac_addr(ip_addr):
         # get mac address information from ipaddress using arp -n command on linux
         mac_addr = re.sub('\s+', ',', data.decode("utf-8").split("\n")[1])
         macs[mac_addr.split(",")[0]] = mac_addr.split(",")[2]
-        print(re.sub('\s+', ',', data.decode("utf-8").split("\n")[1]))
+        # print(re.sub('\s+', ',', data.decode("utf-8").split("\n")[1]))
 
 
 # function to check if an ip is live using ping function in unix
@@ -51,6 +50,23 @@ def check_ip_is_assigned(start, end, local_ip):
             # Ping -c for count of total number of packets to be sent
             #       -w for total number of milliseconds to be waiting
             ping = subprocess.Popen(['ping', '-c', '1', '-w', '1', '-i', '0.2', ip_addr], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = ping.communicate()
+            if ping.returncode == 0:
+                # print(ip_addr + " is available ")
+                available_ips.append(ip_addr)
+                add_mac_addr(ip_addr)
+
+
+# function to check an assigned ip in LAN using arping
+def check_ip_assigned_using_arping(start, end, local_ip):
+
+    # arping -c 1 -f
+    for host in range(int(start), int(end)):
+        ip_addr = host_prefix + str(host)
+        if ip_addr != local_ip:
+            # Ping -c for count of total number of packets to be sent
+            #       -f to return after 1 packet has sent to determine whether it is alive
+            ping = subprocess.Popen(['arping', '-c', '1', '-f', ip_addr], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout, stderr = ping.communicate()
             if ping.returncode == 0:
                 # print(ip_addr + " is available ")
@@ -70,9 +86,7 @@ def check_ip_is_live(start, end, local_ip):
                 result = socket_obj.connect_ex((ip_addr, 445))  # if connection successful socket connect returns 111
                 if result == 111:
                     available_ips.append(ip_addr)
-                    pid = subprocess.Popen(["arp", "-n", ip_addr], stdout=subprocess.PIPE)
-                    data = pid.communicate()[0]
-                    print(data.decode("utf-8"))
+                    add_mac_addr(ip_addr)
             except:
                 pass
             finally:
@@ -81,8 +95,8 @@ def check_ip_is_live(start, end, local_ip):
 
 # function to get vendor name from mac address
 def get_oui_from_mac_addr(mac_addr):
-    MAC_URL = 'http://macvendors.co/api/%s'
-    r = requests.get(MAC_URL % mac_addr)
+    mac_url = 'http://macvendors.co/api/%s'
+    r = requests.get(mac_url % mac_addr)
     return r.json()['result']['company']
 
 
@@ -127,7 +141,7 @@ start_addr = 1
 end_addr = 26
 threads = []
 
-print("\nPlease wait while I am scanning network ...\n")
+print("\nPlease wait while I am scanning network ... It takes approx 30 sec ...\n")
 
 for i in range (0,10):  # making number of threads to 10 to ping asynchronously
 
@@ -135,9 +149,9 @@ for i in range (0,10):  # making number of threads to 10 to ping asynchronously
     if end_addr < 255:
 
         # creating multiple threads to complete the scan quickly
-        t = threading.Thread(target=check_ip_is_assigned, args=(start_addr, end_addr, local_ip,))
-        start_addr = start_addr + 51
-        end_addr = end_addr + 52
+        t = threading.Thread(target=check_ip_assigned_using_arping, args=(start_addr, end_addr, local_ip,))
+        start_addr = start_addr + 25
+        end_addr = end_addr + 25
         t.start()
         threads.append(t)
 
@@ -149,8 +163,11 @@ for t in threads:
 print("LIVE IP\'S AVAILABLE ARE: ")
 for ip in available_ips:
 
-    # getfqdn will convert ipaddress into hostname
-    print(ip+" - "+socket.getfqdn(ip) + " - mac addr : " + macs[ip] + " - Vendor : "+get_oui_from_mac_addr(macs[ip]))
+    # getfqdn will convert ip address into hostname
+    if ip in macs:
+        print(ip+" - "+socket.getfqdn(ip) + " - mac addr : " + macs[ip] + " - Vendor : "+get_oui_from_mac_addr(macs[ip]))
+    else:
+        print(ip + " - " + socket.getfqdn(ip) + " - mac addr : " + "unknown" + " - Vendor : " + "unknown")
 
 # time taken for completing whole task
 duration = time.time() - start_time
