@@ -66,12 +66,15 @@ def check_ip_assigned_using_arping(start, end, local_ip):
         if ip_addr != local_ip:
             # Ping -c for count of total number of packets to be sent
             #       -f to return after 1 packet has sent to determine whether it is alive
-            ping = subprocess.Popen(['arping', '-c', '1', '-f', ip_addr], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            ping = subprocess.Popen(['arping', '-c', '2', '-f', ip_addr], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout, stderr = ping.communicate()
+            # print(stdout)
+            mac_addr = stdout.decode("utf-8").split("\n")[1].split(" ")[4][1:-1]
             if ping.returncode == 0:
                 # print(ip_addr + " is available ")
                 available_ips.append(ip_addr)
-                add_mac_addr(ip_addr)
+                # add_mac_addr(ip_addr)
+                macs[ip_addr] = mac_addr
 
 
 # function to check if an ip is assigned using socket
