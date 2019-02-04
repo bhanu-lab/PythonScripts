@@ -1,4 +1,3 @@
-#This will not run on online IDE 
 import requests 
 import html5lib
 from bs4 import BeautifulSoup 
