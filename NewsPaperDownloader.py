@@ -9,7 +9,7 @@ A simple python script to download a News Paper and to send as email attachment 
 need to install required packages for this script
 '''
 
-#URL which contain GDrive linkof Hindhu Paper
+#URL which contain GDrive link of Hindhu Paper
 URL = "https://www.bitul.in/epaper/the-hindu/"
 r = requests.get(URL) 
 
