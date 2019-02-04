@@ -77,25 +77,19 @@ def main():
         part = MIMEBase('application', "octet-stream")
 
         # adding attachement to the mail message
-        # param_length = sys.argv[0]
-        attachment = True
-        
         #Todo - Take Command Line Argument to send files - may be path to files
-
-        # attaching only if file name mentioned in parameter
-        if attachment:
-			path = 'resources/EMailAttachments/'
-			files = os.listdir(path)
-			#Attaching all the files in the directory
-			for name in files:
-				print(name)
-				filePath = path + name
-				attachment = open(filePath, "rb")
-				part = MIMEBase('application', 'octet-stream')
-				part.set_payload((attachment).read())
-				part.add_header('Content-Disposition', "attachment; filename= %s" % name)
-				msg.attach(part)
-        # send the mail
+        path = 'resources/EMailAttachments/' 			#ToDo
+        files = os.listdir(path)    #f.name for f in os.scandir(path) if f.is_file() #os.listdir(path)
+        #Attaching all the files in the directory
+        for name in files:
+			print(name)
+			filePath = path + name
+			attachment = open(filePath, "rb")
+			part = MIMEBase('application', 'octet-stream')
+			part.set_payload((attachment).read())
+			part.add_header('Content-Disposition', "attachment; filename= %s" % name)
+			msg.attach(part)
+        #send the mail
         failed_rcpts = server.sendmail(my_address, email, msg.as_string())
         del msg
         # failed receipt will be printed here
