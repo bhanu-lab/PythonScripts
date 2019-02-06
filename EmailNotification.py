@@ -67,7 +67,7 @@ def main():
     for name, email in zip(names, emails):
         msg = MIMEMultipart()
         message = message_template.substitute(PERSON_NAME=name.title())
-        print message
+        print(message)
 
         msg['From'] = my_address
         msg['To'] = email
@@ -80,6 +80,10 @@ def main():
         #Todo - Take Command Line Argument to send files - may be path to files
         path = 'resources/EMailAttachments/' 			#ToDo
         files = os.listdir(path)    #f.name for f in os.scandir(path) if f.is_file() #os.listdir(path)
+        '''for fname in os.scandir(path):
+			if(fname.is_file()):
+				print fname'''
+
         #Attaching all the files in the directory
         for name in files:
 			print(name)
