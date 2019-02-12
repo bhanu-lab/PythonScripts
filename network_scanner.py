@@ -5,6 +5,7 @@ import time
 import threading
 import re
 import requests
+import sys
 
 '''
 Determine your own IP address
@@ -42,14 +43,14 @@ def add_mac_addr(ip_addr):
 
 
 # function to check if an ip is live using ping function in unix
-def check_ip_is_assigned(start, end, local_ip):
+def check_ip_is_assigned(start, end, packets, local_ip):
 
     for host in range(int(start), int(end)):
         ip_addr = host_prefix + str(host)
         if ip_addr != local_ip:
             # Ping -c for count of total number of packets to be sent
             #       -w for total number of milliseconds to be waiting
-            ping = subprocess.Popen(['ping', '-c', '1', '-w', '1', '-i', '0.2', ip_addr], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            ping = subprocess.Popen(['ping', '-c', str(packets), '-w', '1', '-i', '0.2', ip_addr], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout, stderr = ping.communicate()
             if ping.returncode == 0:
                 # print(ip_addr + " is available ")
@@ -58,7 +59,7 @@ def check_ip_is_assigned(start, end, local_ip):
 
 
 # function to check an assigned ip in LAN using arping
-def check_ip_assigned_using_arping(start, end, local_ip):
+def check_ip_assigned_using_arping(start, end, packets, local_ip):
 
     # arping -c 1 -f
     for host in range(int(start), int(end)):
@@ -66,9 +67,10 @@ def check_ip_assigned_using_arping(start, end, local_ip):
         if ip_addr != local_ip:
             # Ping -c for count of total number of packets to be sent
             #       -f to return after 1 packet has sent to determine whether it is alive
-            ping = subprocess.Popen(['arping', '-c', '2', '-f', ip_addr], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            print("number of packets "+packets)
+            ping = subprocess.Popen(['arping', '-c', str(packets), '-f', ip_addr], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout, stderr = ping.communicate()
-            # print(stdout)
+            print(stdout)
             mac_addr = stdout.decode("utf-8").split("\n")[1].split(" ")[4][1:-1]
             if ping.returncode == 0:
                 # print(ip_addr + " is available ")
@@ -125,6 +127,14 @@ gateway = netifaces.gateways()
 default_gateway = gateway['default'][netifaces.AF_INET][0]
 print("default gateways is: " + str(default_gateway))
 
+packets = '1'
+# determine number of packets to be sent for querying if given in command line argument it will take from
+# command line else it will treat number of packets as 1
+if sys.argv[0] > '1':
+    print("Only one or zero command line arguments are allowed ...")
+elif sys.argv[0] == '1':
+    packets = sys.argv[1]
+
 # obtaining all the network interfaces like eth, wlan
 interfaces = netifaces.interfaces()
 
@@ -146,13 +156,13 @@ threads = []
 
 print("\nPlease wait while I am scanning network ... It takes approx 30 sec ...\n")
 
-for i in range (0,10):  # making number of threads to 10 to ping asynchronously
+for i in range(0, 10):  # making number of threads to 10 to ping asynchronously
 
     # making sure ip address scanning wont exceed 255
     if end_addr < 255:
 
         # creating multiple threads to complete the scan quickly
-        t = threading.Thread(target=check_ip_assigned_using_arping, args=(start_addr, end_addr, local_ip,))
+        t = threading.Thread(target=check_ip_assigned_using_arping, args=(start_addr, end_addr, packets, local_ip,))
         start_addr = start_addr + 25
         end_addr = end_addr + 25
         t.start()
