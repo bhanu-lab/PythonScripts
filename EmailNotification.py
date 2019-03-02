@@ -55,6 +55,8 @@ def main():
     #print(my_address)
     #print(my_password)
     names, emails = get_contacts('resources/test_contacts.txt')  # read contacts
+    # print(emails)
+    # return
     message_template = get_message_template('resources/email_template.txt')  # read template
 
     # using gmail smtp

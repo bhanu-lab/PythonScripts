@@ -25,7 +25,7 @@ for link in soup.find_all('a'):
 Id = drivelink[32:65]
 file_url = "https://drive.google.com/uc?authuser=0&id="+Id+"&export=download"
 r = requests.get(file_url, stream = True) 
-with open("NewsPaper.pdf","wb") as pdf: 
+with open("resources/NewsPaper/NewsPaper.pdf","wb") as pdf: 
 	for chunk in r.iter_content(chunk_size=1024): 
 		# writing one chunk at a time to pdf file 
 		if chunk: 
