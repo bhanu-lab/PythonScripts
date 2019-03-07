@@ -35,7 +35,7 @@ for link in soup.find_all('a'):
 Id = drivelink[32:65]
 file_url = "https://drive.google.com/uc?authuser=0&id="+Id+"&export=download"
 r = requests.get(file_url, stream = True) 
-with open("resources/NewsPaper/NewsPaper.pdf","wb") as pdf: 
+with open("resources/HindhuNewsPaper.pdf","wb") as pdf: 
 	for chunk in r.iter_content(chunk_size=1024): 
 		# writing one chunk at a time to pdf file 
 		if chunk: 
@@ -105,9 +105,9 @@ def main():
         #Todo - Take Command Line Argument to send files - may be path to files
         path = 'resources/NewsPaper/' 			#ToDo
         files = os.listdir(path)    #f.name for f in os.scandir(path) if f.is_file() #os.listdir(path)
-        '''for fname in os.scandir(path):
-			if(fname.is_file()):
-				print fname'''
+        # for fname in os.scandir(path):
+		# 	if(fname.is_file()):
+		# 		print fname
 
         #Attaching all the files in the directory
         for name in files:
