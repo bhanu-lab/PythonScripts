@@ -88,18 +88,22 @@ def main():
 
         #Attaching all the files in the directory
         for name in files:
-			print(name)
-			filePath = path + name
-			attachment = open(filePath, "rb")
-			part = MIMEBase('application', 'octet-stream')
-			part.set_payload((attachment).read())
-			part.add_header('Content-Disposition', "attachment; filename= %s" % name)
-			msg.attach(part)
+            print(name)
+            filePath = path + name
+            attachment = open(filePath, "rb")
+            part = MIMEBase('application', 'octet-stream')
+            # To change the payload into encoded form 
+            part.set_payload((attachment).read())
+            # encode into base64 
+            encoders.encode_base64(part) 
+            part.add_header('Content-Disposition', "attachment; filename= %s" % name)
+            msg.attach(part)
+            attachment.close()
         #send the mail
-        failed_rcpts = server.sendmail(my_address, email, msg.as_string())
+        failed_rcpts = server.sendmail(my_address, email, msg.as_string().encode())
         del msg
         # failed receipt will be printed here
-        print failed_rcpts
+        print(failed_rcpts)
 
     server.quit()  # stopping SMTP server
 

@@ -31,3 +31,5 @@ with open("resources/NewsPaper/NewsPaper.pdf","wb") as pdf:
 		if chunk: 
 			pdf.write(chunk) 
 #File Will be Downloaded in the current folder
+
+	

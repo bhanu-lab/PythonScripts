@@ -35,13 +35,13 @@ for link in soup.find_all('a'):
 Id = drivelink[32:65]
 file_url = "https://drive.google.com/uc?authuser=0&id="+Id+"&export=download"
 r = requests.get(file_url, stream = True) 
-with open("resources/HindhuNewsPaper.pdf","wb") as pdf: 
+with open("resources/NewsPaper/HindhuNewsPaper.pdf","wb") as pdf: 
 	for chunk in r.iter_content(chunk_size=1024): 
 		# writing one chunk at a time to pdf file 
 		if chunk: 
 			pdf.write(chunk) 
 #File Will be Downloaded in the resources/NewsPaper/ folder
-
+            
 ###                                                                                            ###
 #================================================================================================#
 ###                                                                                            ###
@@ -111,18 +111,22 @@ def main():
 
         #Attaching all the files in the directory
         for name in files:
-			print(name)
-			filePath = path + name
-			attachment = open(filePath, "rb")
-			part = MIMEBase('application', 'octet-stream')
-			part.set_payload((attachment).read())
-			part.add_header('Content-Disposition', "attachment; filename= %s" % name)
-			msg.attach(part)
+            print(name)
+            filePath = path + name
+            attachment = open(filePath, "rb")
+            part = MIMEBase('application', 'octet-stream')
+            # To change the payload into encoded form 
+            part.set_payload((attachment).read())
+            # encode into base64 
+            encoders.encode_base64(part) 
+            part.add_header('Content-Disposition', "attachment; filename= %s" % name)
+            msg.attach(part)
+            attachment.close()
         #send the mail
         failed_rcpts = server.sendmail(my_address, email, msg.as_string())
         del msg
         # failed receipt will be printed here
-        print failed_rcpts
+        print(failed_rcpts)
 
     server.quit()  # stopping SMTP server
 

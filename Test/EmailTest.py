@@ -10,9 +10,9 @@ hard code values used for sake of ease
 need to install email package for this script
 '''
 #Give from address 
-fromaddr = "3grm.updates@gmail.com"
+fromaddr = "mail@domain.com"
 #Give to address 
-toaddr = ["gundupallirajesh@gmail.com", "rrockfb@gmail.com"]
+toaddr = ["mail@domain.com", "mail@domain.com"]
 msg = MIMEMultipart()
 msg['From'] = fromaddr
 msg['To'] = ', '.join(toaddr)
@@ -25,7 +25,7 @@ server = smtplib.SMTP('smtp.gmail.com', 587)
 server.starttls()
 
 #Logging into server with MailID and Password
-server.login(fromaddr, "3grm@1234")
+server.login(fromaddr, "Password")
 text = msg.as_string()
 
 #Sending Mail with Subject and Body
