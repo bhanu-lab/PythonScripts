@@ -24,23 +24,29 @@ URL = "https://www.bitul.in/epaper/the-hindu/"
 r = requests.get(URL) 
 
 soup = BeautifulSoup(r.content, 'html5lib') 
+f=0
 #Checking all the hyperlinks in the site until drive link
 for link in soup.find_all('a'):
   drivelink = link.get('href')
-  if "drive.google.com" in str(drivelink):
+  if "http://www.newspapertoday.xyz" in str(drivelink):
+    print(drivelink)
+    f=1
+    break;
+  elif "drive.google.com" in str(drivelink):
     print(drivelink)
     break;
 #Now AdFree Hindhu News Paper Link is on drivelink
-
-Id = drivelink[32:65]
-file_url = "https://drive.google.com/uc?authuser=0&id="+Id+"&export=download"
+if f==0:
+    Id = drivelink[32:65]
+    file_url = "https://drive.google.com/uc?authuser=0&id="+Id+"&export=download"
+file_url = drivelink
 r = requests.get(file_url, stream = True) 
-with open("resources/NewsPaper/HindhuNewsPaper.pdf","wb") as pdf: 
+with open("C:/Users/Rajesh.Gundupalli/Desktop/PythonScripts/resources/NewsPaper/NewsPaper.pdf","wb") as pdf: 
 	for chunk in r.iter_content(chunk_size=1024): 
 		# writing one chunk at a time to pdf file 
 		if chunk: 
 			pdf.write(chunk) 
-#File Will be Downloaded in the resources/NewsPaper/ folder
+#File Will be Downloaded in the current folder
             
 ###                                                                                            ###
 #================================================================================================#
@@ -76,11 +82,11 @@ def get_my_account_info(file_name):
 # main function
 def main():
 
-    my_address, my_password = get_my_account_info('resources/from_mail.txt')  # get my account details
+    my_address, my_password = get_my_account_info('C:/Users/Rajesh.Gundupalli/Desktop/PythonScripts/resources/from_mail.txt')  # get my account details
     #print(my_address)
     #print(my_password)
-    names, emails = get_contacts('resources/test_contacts.txt')  # read contacts
-    message_template = get_message_template('resources/email_template.txt')  # read template
+    names, emails = get_contacts('C:/Users/Rajesh.Gundupalli/Desktop/PythonScripts/resources/test_contacts.txt')  # read contacts
+    message_template = get_message_template('C:/Users/Rajesh.Gundupalli/Desktop/PythonScripts/resources/email_template.txt')  # read template
 
     # using gmail smtp
     server = smtplib.SMTP(host='smtp.gmail.com', port='587')
@@ -103,7 +109,7 @@ def main():
 
         # adding attachement to the mail message
         #Todo - Take Command Line Argument to send files - may be path to files
-        path = 'resources/NewsPaper/' 			#ToDo
+        path = 'C:/Users/Rajesh.Gundupalli/Desktop/PythonScripts/resources/NewsPaper/' 			#ToDo
         files = os.listdir(path)    #f.name for f in os.scandir(path) if f.is_file() #os.listdir(path)
         # for fname in os.scandir(path):
 		# 	if(fname.is_file()):
