@@ -1,5 +1,5 @@
 import requests 
-import html5lib
+#import html5lib
 from bs4 import BeautifulSoup 
 import smtplib
 from email.mime.multipart import MIMEMultipart
@@ -39,7 +39,8 @@ for link in soup.find_all('a'):
 if f==0:
     Id = drivelink[32:65]
     file_url = "https://drive.google.com/uc?authuser=0&id="+Id+"&export=download"
-file_url = drivelink
+else:
+    file_url = drivelink
 r = requests.get(file_url, stream = True) 
 with open("C:/Users/Rajesh.Gundupalli/Desktop/PythonScripts/resources/NewsPaper/NewsPaper.pdf","wb") as pdf: 
 	for chunk in r.iter_content(chunk_size=1024): 

@@ -10,7 +10,7 @@ import html5lib
 from bs4 import BeautifulSoup 
 
 #URL which contain GDrive link of Hindhu Paper
-URL = "https://www.bitul.in/epaper/the-hindu/"
+URL = "https://www.bitul.in/epaper/the-hindu/"    #"https://www.bitul.in/epaper/indian-express-pdf/"
 r = requests.get(URL) 
 
 soup = BeautifulSoup(r.content, 'html5lib') 
@@ -29,7 +29,8 @@ for link in soup.find_all('a'):
 if f==0:
     Id = drivelink[32:65]
     file_url = "https://drive.google.com/uc?authuser=0&id="+Id+"&export=download"
-file_url = drivelink
+else:
+    file_url = drivelink
 r = requests.get(file_url, stream = True) 
 with open("resources/NewsPaper/NewsPaper.pdf","wb") as pdf: 
 	for chunk in r.iter_content(chunk_size=1024): 
