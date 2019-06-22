@@ -20,33 +20,34 @@ need to install selenium package
 '''
 
 
-#function to write data into a CSV file
+# function to write data into a CSV file
 def write_time_to_file(target, onlinetime):
-	#opening in append mode
+	# opening in append mode
 	with open('TimeTracker.csv', 'a+') as csv_file:
 		fieldNames = ['Target', 'onlinetime']
 		writer = csv.DictWriter(csv_file, fieldNames)
 		writer.writerow({'Target': target, 'onlinetime': onlinetime})
 
-#opening chrome browser
+
+# opening chrome browser
 driver = webdriver.Chrome('/home/pi/Downloads/chromium-driver/chromedriver')
 
-#opening whats web page
+# opening whats web page
 driver.get("https://web.whatsapp.com/") 
 wait = WebDriverWait(driver, 600) 
 
-target = '"your target name"'#change your target which is in your recent history of whats app chat
+target = '"your target name"'  # change your target which is in your recent history of whats app chat
 
 target_argument = '//span[contains(@title,' + target + ')]'
-#clicking on the target user name for checking whether user status is online
+# clicking on the target user name for checking whether user status is online
 target_user = wait.until(EC.presence_of_element_located((By.XPATH, target_argument))) 
 target_user.click()
 
-#initializing variables for using inside infinite loop
+# initializing variables for using inside infinite loop
 online_time = 0
 came_from_online = False
 
-#infinite loop to check and log online time spent by the user
+# infinite loop to check and log online time spent by the user
 while True:
 	if('online' in driver.page_source):
 		if(not came_from_online):

@@ -1,0 +1,1 @@
+Line Num 21: use os.path.join() for joining path and files go through that to understand why it has to be used

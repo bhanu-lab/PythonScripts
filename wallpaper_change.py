@@ -52,7 +52,7 @@ if ops == 'LIN':
     os.system("/usr/bin/gsettings set org.gnome.desktop.background picture-uri "+wallpapers_location+"/"+wallpapers_list[wallpaper_num])
     logger.info("Command Executed is : /usr/bin/gsettings set org.gnome.desktop.background picture-uri "+wallpapers_location+"/"+wallpapers_list[wallpaper_num])
 
-#for windows to set wallpaper
+# for windows to set wallpaper
 elif ops == 'WIN':
     TOTAL=wallpapers_location+"/"+wallpapers_list[wallpaper_num]
     PATH =bytes(TOTAL,'utf-8')
