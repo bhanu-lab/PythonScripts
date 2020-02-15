@@ -129,7 +129,7 @@ gateway = netifaces.gateways()
 default_gateway = gateway['default'][netifaces.AF_INET][0]
 print("default gateways is: " + str(default_gateway))
 
-packets = '1'
+packets = '2'
 # determine number of packets to be sent for querying if given in command line argument it will take from
 # command line else it will treat number of packets as 1
 if sys.argv[0] > '1':
