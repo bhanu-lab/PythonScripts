@@ -59,7 +59,7 @@ def check_ip_is_assigned(start, end, packets, local_ip):
 
 
 # function to check an assigned ip in LAN using arping
-def check_ip_assigned_using_arping(start, end, packets, local_ip):
+def check_ip_assigned_using_arping(start, end, packets, local_ip, interface):
 
     # arping -c 1 -f
     for host in range(int(start), int(end)):
@@ -68,15 +68,17 @@ def check_ip_assigned_using_arping(start, end, packets, local_ip):
             # Ping -c for count of total number of packets to be sent
             #       -f to return after 1 packet has sent to determine whether it is alive
             # print("number of packets "+packets)
-            ping = subprocess.Popen(['arping', '-c', str(packets), '-f', ip_addr], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            ping = subprocess.Popen(['arping', '-c', str(packets), '-f', '-I', interface, ip_addr], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout, stderr = ping.communicate()
             # print(stdout)
-            mac_addr = stdout.decode("utf-8").split("\n")[1].split(" ")[4][1:-1]
-            if ping.returncode == 0:
-                # print(ip_addr + " is available ")
-                available_ips.append(ip_addr)
-                # add_mac_addr(ip_addr)
-                macs[ip_addr] = mac_addr
+            # print(stderr)
+            if len(stderr) == 0 and len(stdout) > 0 and len(stdout.decode("utf-8").split("\n")[1].split(" ")) > 5:
+                mac_addr = stdout.decode("utf-8").split("\n")[1].split(" ")[4][1:-1]
+                if ping.returncode == 0:
+                    # print(ip_addr + " is available ")
+                    available_ips.append(ip_addr)
+                    # add_mac_addr(ip_addr)
+                    macs[ip_addr] = mac_addr
 
 
 # function to check if an ip is assigned using socket
@@ -146,31 +148,31 @@ for interface in interfaces:
     except KeyError:
         print("No address assigned for interface : " + interface)
 
-addrs = default_gateway.split('.')
-# print("last device number of subnetwork : {}" + str(int(addrs[3])+1))
-host_prefix = addrs[0] + "." + addrs[1] + "." + addrs[2] + "."
+    addrs = default_gateway.split('.')
+    # print("last device number of subnetwork : {}" + str(int(addrs[3])+1))
+    host_prefix = addrs[0] + "." + addrs[1] + "." + addrs[2] + "."
 
-start_addr = 1
-end_addr = 26
-threads = []
+    start_addr = 1
+    end_addr = 26
+    threads = []
 
-print("\nPlease wait while I am scanning network ... It takes approx 30 sec ...\n")
+    print("\nPlease wait while I am scanning network ... It takes approx 30 sec ...\n")
 
-for i in range(0, 10):  # making number of threads to 10 to ping asynchronously
+    for i in range(0, 10):  # making number of threads to 10 to ping asynchronously
 
-    # making sure ip address scanning wont exceed 255
-    if end_addr < 255:
+        # making sure ip address scanning wont exceed 255
+        if end_addr < 255:
 
-        # creating multiple threads to complete the scan quickly
-        t = threading.Thread(target=check_ip_assigned_using_arping, args=(start_addr, end_addr, packets, local_ip,))
-        start_addr = start_addr + 25
-        end_addr = end_addr + 25
-        t.start()
-        threads.append(t)
+            # creating multiple threads to complete the scan quickly
+            t = threading.Thread(target=check_ip_assigned_using_arping, args=(start_addr, end_addr, packets, local_ip, interface,))
+            start_addr = start_addr + 25
+            end_addr = end_addr + 25
+            t.start()
+            threads.append(t)
 
-# joining all the threads
-for t in threads:
-    t.join()
+    # joining all the threads
+    for t in threads:
+        t.join()
 
 # showing available IP's
 print("LIVE IP\'S AVAILABLE ARE: ")

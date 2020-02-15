@@ -23,8 +23,8 @@ def check_ip_is_assigned(start, end):
         if ping.returncode == 0:
             print(ip_addr + " is available ")
             available_ips.append(ip_addr)
-        else:
-            print(ip_addr + " is not available")
+        #else:
+            #print(ip_addr + " is not available")
 
 
 # noting start time
