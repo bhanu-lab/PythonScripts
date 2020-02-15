@@ -6,6 +6,7 @@ import threading
 import re
 import requests
 import sys
+import redis
 
 '''
 Determine your own IP address
@@ -129,7 +130,7 @@ gateway = netifaces.gateways()
 default_gateway = gateway['default'][netifaces.AF_INET][0]
 print("default gateways is: " + str(default_gateway))
 
-packets = '2'
+packets = '1'
 # determine number of packets to be sent for querying if given in command line argument it will take from
 # command line else it will treat number of packets as 1
 if sys.argv[0] > '1':
@@ -176,11 +177,18 @@ for interface in interfaces:
 
 # showing available IP's
 print("LIVE IP\'S AVAILABLE ARE: ")
+redis_db = redis.StrictRedis(host="localhost", port=6379, db=0)
 for ip in available_ips:
-
     # getfqdn will convert ip address into hostname
     if ip in macs:
-        print(ip+" - "+socket.getfqdn(ip) + " - mac addr : " + macs[ip] + " - Vendor : "+get_oui_from_mac_addr(macs[ip]))
+        mac_addr = macs[ip]
+        nick_name = redis_db.get(mac_addr)
+        print(ip+" - "+socket.getfqdn(ip) + " - mac addr : " + macs[ip] + " - Vendor : "+get_oui_from_mac_addr(macs[ip])+" "+str(nick_name))
+        if nick_name is None:
+            ans = input("Would You like to Store a Nick Name for this mac address ? Y/N")
+            if ans == 'y':
+                name = input("Enter Nick Name : ")
+                redis_db.set(macs[ip], name)
     else:
         print(ip + " - " + socket.getfqdn(ip) + " - mac addr : " + "unknown" + " - Vendor : " + "unknown")
 
