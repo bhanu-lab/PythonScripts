@@ -20,7 +20,7 @@ get vendor name using mac address identified
 
 available_ips = []  # declaring available ips list
 macs = {}  # declaring mac addresses map
-
+unwanted_intf = ['docker0']
 
 # function to get local machine mac addr
 def get_local_machine_mac_addr(local_ip):
@@ -142,38 +142,39 @@ elif sys.argv[0] == '1':
 interfaces = netifaces.interfaces()
 
 for interface in interfaces:
-    print("Scanning network: " + str(interface)+"\n")
-    addrs = netifaces.ifaddresses(str(interface))
-    try:
-        print(addrs[netifaces.AF_INET])
-    except KeyError:
-        print("No address assigned for interface : " + interface)
+    if interface not in unwanted_intf:
+        print("Scanning network: " + str(interface)+"\n")
+        addrs = netifaces.ifaddresses(str(interface))
+        try:
+            print(addrs[netifaces.AF_INET])
+        except KeyError:
+            print("No address assigned for interface : " + interface)
 
-    addrs = default_gateway.split('.')
-    # print("last device number of subnetwork : {}" + str(int(addrs[3])+1))
-    host_prefix = addrs[0] + "." + addrs[1] + "." + addrs[2] + "."
+        addrs = default_gateway.split('.')
+        # print("last device number of subnetwork : {}" + str(int(addrs[3])+1))
+        host_prefix = addrs[0] + "." + addrs[1] + "." + addrs[2] + "."
 
-    start_addr = 1
-    end_addr = 26
-    threads = []
+        start_addr = 1
+        end_addr = 26
+        threads = []
 
-    print("\nPlease wait while I am scanning network ... It takes approx 30 sec ...\n")
+        print("\nPlease wait while I am scanning network ... It takes approx 30 sec ...\n")
 
-    for i in range(0, 10):  # making number of threads to 10 to ping asynchronously
+        for i in range(0, 10):  # making number of threads to 10 to ping asynchronously
 
-        # making sure ip address scanning wont exceed 255
-        if end_addr < 255:
+            # making sure ip address scanning wont exceed 255
+            if end_addr < 255:
 
-            # creating multiple threads to complete the scan quickly
-            t = threading.Thread(target=check_ip_assigned_using_arping, args=(start_addr, end_addr, packets, local_ip, interface,))
-            start_addr = start_addr + 25
-            end_addr = end_addr + 25
-            t.start()
-            threads.append(t)
+                # creating multiple threads to complete the scan quickly
+                t = threading.Thread(target=check_ip_assigned_using_arping, args=(start_addr, end_addr, packets, local_ip, interface,))
+                start_addr = start_addr + 25
+                end_addr = end_addr + 25
+                t.start()
+                threads.append(t)
 
-    # joining all the threads
-    for t in threads:
-        t.join()
+        # joining all the threads
+        for t in threads:
+            t.join()
 
 # showing available IP's
 print("LIVE IP\'S AVAILABLE ARE: ")
