@@ -7,6 +7,7 @@ import re
 import requests
 import sys
 import redis
+import os
 
 '''
 Determine your own IP address
@@ -20,8 +21,11 @@ get vendor name using mac address identified
 
 available_ips = []  # declaring available ips list
 macs = {}  # declaring mac addresses map
-unwanted_intf = ['docker0']
-
+unwanted_intf = ['docker0', 'lo']
+redis_db = redis.Redis(
+            host= os.getenv('REDIS_HOST'),
+            port= os.getenv('REDIS_PORT'),
+            password = os.getenv('REDIS_PASS'))
 # function to get local machine mac addr
 def get_local_machine_mac_addr(local_ip):
     p = subprocess.Popen(["ip", "link"], stdout=subprocess.PIPE)
@@ -178,7 +182,7 @@ for interface in interfaces:
 
 # showing available IP's
 print("LIVE IP\'S AVAILABLE ARE: ")
-redis_db = redis.StrictRedis(host="localhost", port=6379, db=0)
+# redis_db = redis.StrictRedis(host="localhost", port=6379, db=0)
 for ip in available_ips:
     # getfqdn will convert ip address into hostname
     if ip in macs:
